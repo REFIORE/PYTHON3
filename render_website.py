@@ -12,6 +12,7 @@ with open("books/meta_data.json", "r", encoding="utf-8") as my_file:
 def on_reload():
     os.makedirs('pages', exist_ok=True)
     pages = list(chunked(books, 10))
+    all_pages = len(pages)
     for page, books_page in enumerate(pages):
         env = Environment(
             loader=FileSystemLoader('.'),
@@ -21,10 +22,12 @@ def on_reload():
         template = env.get_template('template.html')
 
         rendered_page = template.render(
-            books=books_page
+            books=books_page,
+            all_pages=all_pages,
+            page_number=page+1
         )
 
-        with open(f'pages/index{page}.html', 'w', encoding="utf8") as file:
+        with open(f'pages/index{page+1}.html', 'w', encoding="utf8") as file:
             file.write(rendered_page)
 
 
