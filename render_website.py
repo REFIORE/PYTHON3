@@ -5,11 +5,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 
 
-with open("books/meta_data.json", "r", encoding="utf-8") as my_file:
-    books = json.load(my_file)
-
-
 def on_reload():
+    with open("meta_data.json", "r", encoding="utf-8") as my_file:
+        books = json.load(my_file)
     os.makedirs('pages', exist_ok=True)
     pages = list(chunked(books, 10))
     all_pages = len(pages)
@@ -31,7 +29,12 @@ def on_reload():
             file.write(rendered_page)
 
 
-on_reload()
-server = Server()
-server.watch('template.html', on_reload)
-server.serve(root='.')
+def main():
+    on_reload()
+    server = Server()
+    server.watch('template.html', on_reload)
+    server.serve(root='.')
+
+
+if __name__ == '__main__':
+    main()
