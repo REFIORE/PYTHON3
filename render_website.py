@@ -1,15 +1,19 @@
 import json
 import os
+from dotenv import load_dotenv
 from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 
 
 def on_reload():
-    with open("meta_data.json", "r", encoding="utf-8") as my_file:
+    load_dotenv()
+    meta_data_json = os.getenv('META_DATA_JSON', 'meta_data.json')
+    with open(meta_data_json, 'r', encoding='utf-8') as my_file:
         books = json.load(my_file)
     os.makedirs('pages', exist_ok=True)
-    pages = list(chunked(books, 10))
+    number_of_pages = 10
+    pages = list(chunked(books, number_of_pages))
     all_pages = len(pages)
     for page, books_page in enumerate(pages):
         env = Environment(
@@ -25,7 +29,7 @@ def on_reload():
             page_number=page+1
         )
 
-        with open(f'pages/index{page+1}.html', 'w', encoding="utf8") as file:
+        with open(f'pages/index{page+1}.html', 'w', encoding='utf8') as file:
             file.write(rendered_page)
 
 
@@ -33,7 +37,7 @@ def main():
     on_reload()
     server = Server()
     server.watch('template.html', on_reload)
-    server.serve(root='.')
+    server.serve(root='.', default_filename='./pages/index1.html')
 
 
 if __name__ == '__main__':
